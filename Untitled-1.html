@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AI Grant Proposal Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .container {
+      width: 80%;
+      margin: auto;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #2c3e50;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #219150;
+    }
+
+    .output {
+      background-color: #ecf0f1;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>AI Grant Proposal Generator</h1>
+  </header>
+
+  <div class="container">
+
+    <!-- INPUT SECTION -->
+    <div class="card">
+      <h2>Funding Opportunity Announcement (FOA)</h2>
+      <textarea id="foa" placeholder="Enter funding details..."></textarea>
+
+      <h2>Researcher Profile</h2>
+      <textarea id="researcher" placeholder="Enter researcher expertise..."></textarea>
+
+      <h2>Project Idea</h2>
+      <textarea id="idea" placeholder="Enter project idea..."></textarea>
+
+      <br><br>
+      <button onclick="generateProposal()">Generate Proposal</button>
+    </div>
+
+    <!-- OUTPUT SECTION -->
+    <div class="card">
+      <h2>Generated Proposal</h2>
+      <div id="proposalOutput" class="output"></div>
+    </div>
+
+    <div class="card">
+      <h2>Budget Plan</h2>
+      <div id="budgetOutput" class="output"></div>
+    </div>
+
+    <div class="card">
+      <h2>Timeline</h2>
+      <div id="timelineOutput" class="output"></div>
+    </div>
+
+    <div class="card">
+      <h2>Compliance Report</h2>
+      <div id="complianceOutput" class="output"></div>
+    </div>
+
+  </div>
+
+  <script>
+    function generateProposal() {
+
+      let foa = document.getElementById("foa").value;
+      let researcher = document.getElementById("researcher").value;
+      let idea = document.getElementById("idea").value;
+
+      // Simulated AI Output (Frontend Demo)
+      let proposal = `
+Title: AI-Based Research Project
+
+Abstract:
+This project aligns with funding priorities and aims to develop innovative solutions.
+
+Objectives:
+- Develop system
+- Analyze data
+
+Methodology:
+- Data collection
+- Model development
+
+Impact:
+Improves efficiency and research outcomes.
+
+Conclusion:
+This proposal meets agency goals.
+    `;
+
+      let budget = `
+Personnel: $50,000
+Equipment: $20,000
+Software: $10,000
+Total: $80,000
+    `;
+
+      let timeline = `
+Month 1-2: Research
+Month 3-5: Development
+Month 6: Testing
+    `;
+
+      let compliance = `
+✔ Format Correct
+✔ Eligibility Met
+✔ All Sections Included
+    `;
+
+      document.getElementById("proposalOutput").innerText = proposal;
+      document.getElementById("budgetOutput").innerText = budget;
+      document.getElementById("timelineOutput").innerText = timeline;
+      document.getElementById("complianceOutput").innerText = compliance;
+    }
+  </script>
+
+</body>
+
+</html>

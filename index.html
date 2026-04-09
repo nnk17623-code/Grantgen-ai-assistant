@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Space Debris Monitoring Pro</title>
+
+<style>
+    body { margin: 0; overflow: hidden; background: black; }
+    
+    h1 {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: white;
+        font-family: Arial;
+    }
+
+    #alertBox {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        color: white;
+        font-size: 18px;
+        font-family: Arial;
+        background: rgba(255, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🚀 Space Debris Monitoring System</h1>
+<div id="alertBox">⚠️ Collision Risk Detected!</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Orbit Controls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+// Scene
+const scene = new THREE.Scene();
+
+// Camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Controls (Zoom + Rotate)
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+// Earth (Solid)
+const earthGeometry = new THREE.SphereGeometry(10, 32, 32);
+const earthMaterial = new THREE.MeshStandardMaterial({ color: 0x0033ff });
+const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+scene.add(earth);
+
+// Light
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(50, 50, 50);
+scene.add(light);
+
+// Create object
+function createObject(color) {
+    const geometry = new THREE.SphereGeometry(1, 16, 16);
+    const material = new THREE.MeshStandardMaterial({ color: color });
+    const obj = new THREE.Mesh(geometry, material);
+
+    obj.position.x = (Math.random() - 0.5) * 100;
+    obj.position.y = (Math.random() - 0.5) * 100;
+    obj.position.z = (Math.random() - 0.5) * 100;
+
+    // velocity
+    obj.velocity = {
+        x: (Math.random() - 0.5) * 0.2,
+        y: (Math.random() - 0.5) * 0.2,
+        z: (Math.random() - 0.5) * 0.2
+    };
+
+    return obj;
+}
+
+// Satellites
+let satellites = [];
+for (let i = 0; i < 8; i++) {
+    let s = createObject(0x00ff00);
+    satellites.push(s);
+    scene.add(s);
+}
+
+// Debris
+let debris = [];
+for (let i = 0; i < 12; i++) {
+    let d = createObject(0xffff00);
+    debris.push(d);
+    scene.add(d);
+}
+
+// Distance
+function distance(a, b) {
+    return Math.sqrt(
+        (a.position.x - b.position.x) ** 2 +
+        (a.position.y - b.position.y) ** 2 +
+        (a.position.z - b.position.z) ** 2
+    );
+}
+
+// Alert UI
+const alertBox = document.getElementById("alertBox");
+
+// Collision Detection
+function detectCollisions() {
+    let danger = false;
+
+    satellites.forEach(s => s.material.color.set(0x00ff00));
+    debris.forEach(d => d.material.color.set(0xffff00));
+
+    satellites.forEach((sat) => {
+        debris.forEach((deb) => {
+            if (distance(sat, deb) < 6) {
+                sat.material.color.set(0xff0000);
+                deb.material.color.set(0xff0000);
+                danger = true;
+            }
+        });
+    });
+
+    alertBox.style.display = danger ? "block" : "none";
+}
+
+// Camera position
+camera.position.z = 50;
+
+// Animation
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Rotate Earth
+    earth.rotation.y += 0.003;
+
+    // Move objects smoothly
+    satellites.forEach(obj => {
+        obj.position.x += obj.velocity.x;
+        obj.position.y += obj.velocity.y;
+        obj.position.z += obj.velocity.z;
+    });
+
+    debris.forEach(obj => {
+        obj.position.x += obj.velocity.x;
+        obj.position.y += obj.velocity.y;
+        obj.position.z += obj.velocity.z;
+    });
+
+    detectCollisions();
+
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+animate();
+
+// Responsive
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>

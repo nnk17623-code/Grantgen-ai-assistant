@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrantForge - AI Proposal Generator</title>
+    <!-- Modern Typography: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg-dark: #070b14;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(79, 172, 254, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            /* Deep, dynamic background gradient */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.1) 0%, transparent 40%);
+        }
+
+        /* Typography & Utilities */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(11, 15, 25, 0.8);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+            background: var(--surface-hover);
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(90deg, rgba(79,172,254,0.1) 0%, transparent 100%);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-nav {
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .user-profile img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .user-profile img:hover {
+            transform: scale(1.05);
+        }
+
+        .content-scroll {
+            flex: 1;
+            padding: 40px 48px;
+            overflow-y: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .content-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-scroll::-webkit-scrollbar-thumb {
+            background: var(--surface-hover);
+            border-radius: 4px;
+        }
+
+        /* Form Area */
+        .panel-desc {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 140px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--border-glow);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        textarea::placeholder {
+            color: #64748b;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: none;
+            padding: 18px 36px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            width: auto;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Loading State */
+        #loadingState {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--surface-hover);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px auto;
+        }
+
+        .loading-steps {
+            list-style: none;
+            margin-top: 40px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .loading-step {
+            padding: 12px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            opacity: 0.4;
+            transform: translateX(-10px);
+            transition: all 0.5s ease;
+        }
+
+        .loading-step i {
+            color: var(--success);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--text-main);
+        }
+
+        .loading-step.active i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Output Tabs State */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--surface-hover);
+        }
+
+        .tab-btn.active {
+            background: rgba(79, 172, 254, 0.1);
+            color: var(--primary);
+            box-shadow: inset 0 0 0 1px var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            min-height: 400px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h3 {
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-text {
+            line-height: 1.8;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+        }
+
+        .result-text p {
+            margin-bottom: 16px;
+        }
+
+        .highlight-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 16px;
+            border-radius: 4px 8px 8px 4px;
+            margin: 20px 0;
+            color: #a7f3d0;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-atom text-gradient"></i>
+                <span>GrantForge</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active"><i class="fa-solid fa-wand-magic-sparkles"></i> New Proposal</a>
+                <a href="#"><i class="fa-solid fa-layer-group"></i> My Grants</a>
+                <a href="#"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            <header class="top-nav">
+                <h1 class="page-title">Generate <span class="text-gradient">Grant Proposal</span></h1>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Dr+Researcher&background=0b0f19&color=00f2fe" alt="Profile">
+                </div>
+            </header>
+
+            <div class="content-scroll">
+                
+                <!-- STEP 1: Input Forms -->
+                <div id="inputSection" class="glass-panel fade-in">
+                    <p class="panel-desc">Provide your project details, qualifications, and the target funding agency guidelines to dynamically generate a compliant and compelling application.</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-book-open text-gradient"></i> Funding Opportunity (FOA/RFP)</label>
+                            <textarea placeholder="Paste funding agency guidelines, specific priorities, page limits, and strategic goals here..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-user-graduate text-gradient"></i> Researcher Expertise</label>
+                            <textarea placeholder="List key researchers, past applicable grants, vital publications, and relevant lab infrastructure..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lightbulb text-gradient"></i> Core Project Idea & Objective</label>
+                        <textarea placeholder="Describe your scientific hypothesis, core methodology, and expected impact..."></textarea>
+                    </div>
+
+                    <button class="btn-primary" id="genBtn" onclick="runGeneration()">
+                        <i class="fa-solid fa-microchip"></i> Synthesize Proposal
+                    </button>
+                </div>
+
+                <!-- STEP 2: Loading State -->
+                <div id="loadingState" class="glass-panel" style="display: none;">
+                    <div class="spinner"></div>
+                    <h2 class="text-gradient" style="margin-bottom: 12px;">AI is crafting your proposal...</h2>
+                    <p style="color: var(--text-muted)">Cross-referencing agency priorities with your expertise.</p>
+                    
+                    <ul class="loading-steps">
+                        <li class="loading-step" id="step1"><i class="fa-solid fa-check"></i> Parsing FOA alignment rules...</li>
+                        <li class="loading-step" id="step2"><i class="fa-solid fa-check"></i> Structuring executive summary...</li>
+                        <li class="loading-step" id="step3"><i class="fa-solid fa-check"></i> Formulating budget & timeline...</li>
+                        <li class="loading-step" id="step4"><i class="fa-solid fa-check"></i> Finalizing compliance checks...</li>
+                    </ul>
+                </div>
+
+                <!-- STEP 3: Results Dashboard -->
+                <div id="outputState" style="display: none;" class="fade-in">
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="openTab('summary', this)">Executive Summary</button>
+                        <button class="tab-btn" onclick="openTab('budget', this)">Budget Plan</button>
+                        <button class="tab-btn" onclick="openTab('timeline', this)">Timeline</button>
+                        <button class="tab-btn" onclick="openTab('compliance', this)">Agency Alignment</button>
+                    </div>
+
+                    <!-- Executive Summary Tab -->
+                    <div class="tab-content glass-panel active" id="summary">
+                        <h3><i class="fa-solid fa-file-lines text-gradient"></i> Executive Summary</h3>
+                        <div class="result-text">
+                            <p><strong>Project Title:</strong> Next-Generation Renewable Integration Strategies for Urban Infrastructures</p>
+                            <p>This proposed research perfectly aligns with the agency's strategic priority to advance sustainable urban development. By leveraging our established track record in micro-grid deployment and smart-sensor networks, we propose an innovative framework that reduces energy grid load by an estimated 25% within peak hours.</p>
+                            <div class="highlight-box">
+                                <strong>AI Insight:</strong> Explicitly utilized terminology from the FOA guidelines (e.g., "load reduction", "smart-sensor framework") to maximize reviewer resonance.
+                            </div>
+                            <p>Our methodology combines novel algorithmic predictions with real-world infrastructure testing, ensuring that the results not only contribute to academic understanding but yield immediate commercial and municipal applications.</p>
+                        </div>
+                    </div>
+
+                    <!-- Budget Tab (Mock) -->
+                    <div class="tab-content glass-panel" id="budget">
+                        <h3><i class="fa-solid fa-sack-dollar text-gradient"></i> Detailed Budget Justification</h3>
+                        <div class="result-text">
+                            <p>The total requested funding is <strong>$450,000</strong> over 36 months, carefully allocated to ensure maximum project impact while remaining well within the FOA maximum limit of $500k.</p>
+                            <ul style="margin-left: 20px; line-height: 2;">
+                                <li><strong>Personnel ($210,000):</strong> Covers 2 postdoctoral researchers and 1 PI summer salary.</li>
+                                <li><strong>Equipment ($85,000):</strong> Smart-sensor array nodes and specialized telemetry gear.</li>
+                                <li><strong>Travel & Publication ($15,000):</strong> Dissemination of findings at 3 major conferences as mandated by section 4.1 of the FOA.</li>
+                                <li><strong>Indirect Costs ($140,000):</strong> Calculated accurately at the institutional rate of 45%.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Add timeline and compliance tabs similarly if needed -->
+                    <div class="tab-content glass-panel" id="timeline">
+                        <h3><i class="fa-solid fa-calendar-check text-gradient"></i> Project Timeline</h3>
+                        <div class="result-text">
+                            <p>A structured 36-month timeline mapped cleanly to the deliverables required by the granting agency.</p>
+                            <p><strong>Phase 1 (Months 1-8):</strong> Procurement and System Design. <em>Milestone: Initial design review.</em></p>
+                            <p><strong>Phase 2 (Months 9-24):</strong> Implementation and Live Testing. <em>Milestone: Mid-project data report.</em></p>
+                            <p><strong>Phase 3 (Months 25-36):</strong> Data Analysis, Publishing, and Handover. <em>Milestone: Final Compliance Report.</em></p>
+                        </div>
+                    </div>
+
+                    <div class="tab-content glass-panel" id="compliance">
+                        <h3><i class="fa-solid fa-shield-check text-gradient"></i> Agency Alignment Matrix</h3>
+                        <div class="result-text">
+                            <p>Ensuring absolutely zero technicalities prevent your proposal from being reviewed.</p>
+                            <div class="highlight-box" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success);">
+                                <i class="fa-solid fa-circle-check"></i> <strong>Page Count:</strong> Projected 14 pages (Limit: 15)
+                            </div>
+                            <div class="highlight-box" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success);">
+                                <i class="fa-solid fa-circle-check"></i> <strong>Data Management Plan:</strong> Included and satisfies Open Data requirements.
+                            </div>
+                            <div class="highlight-box" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success);">
+                                <i class="fa-solid fa-circle-check"></i> <strong>PI Eligibility:</strong> Verified against prior grant limitations.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function openTab(tabId, btnElement) {
+            // Remove active classes
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Add active to selected
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // Mock AI Generation Simulation
+        function runGeneration() {
+            const btn = document.getElementById('genBtn');
+            const inputSec = document.getElementById('inputSection');
+            const loadSec = document.getElementById('loadingState');
+            const outSec = document.getElementById('outputState');
+
+            // Initial UI update
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                inputSec.style.display = 'none';
+                loadSec.style.display = 'block';
+
+                // Sequence the checkmarks
+                const steps = [1, 2, 3, 4];
+                steps.forEach((step, index) => {
+                    setTimeout(() => {
+                        document.getElementById('step' + step).classList.add('active');
+                    }, index * 800 + 400); // Stagger animations
+                });
+
+                // Finish loading and show results dashboard
+                setTimeout(() => {
+                    loadSec.style.display = 'none';
+                    outSec.style.display = 'block';
+                }, steps.length * 800 + 1200);
+
+            }, 400);
+        }
+    </script>
+</body>
+</html>
